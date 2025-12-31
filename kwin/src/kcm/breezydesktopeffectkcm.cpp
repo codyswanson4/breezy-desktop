@@ -352,42 +352,6 @@ BreezyDesktopEffectConfig::BreezyDesktopEffectConfig(QObject *parent, const KPlu
         label->setText(QStringLiteral("Breezy Desktop - v%1").arg(QLatin1String(BREEZY_DESKTOP_VERSION_STR)));
     }
 
-    if (auto btnEmail = widget()->findChild<QPushButton*>("buttonSubmitEmail")) {
-        connect(btnEmail, &QPushButton::clicked, this, [this]() {
-            auto edit = widget()->findChild<QLineEdit*>("lineEditLicenseEmail");
-            auto labelStatus = widget()->findChild<QLabel*>("labelEmailStatus");
-            if (!edit || edit->text().trimmed().isEmpty() || !labelStatus) return;
-            setRequestInProgress({edit, sender()}, true);
-            labelStatus->setVisible(false);
-            bool success = XRDriverIPC::instance().requestToken(edit->text().trimmed().toStdString());
-            showStatus(labelStatus, success, success ? tr("Request sent. Check your email for instructions.") : tr("Failed to send request."));
-            setRequestInProgress({edit, sender()}, false);
-        });
-        if (auto emailEdit = widget()->findChild<QLineEdit*>("lineEditLicenseEmail")) {
-            emailEdit->installEventFilter(this);
-        }
-    }
-    if (auto btnToken = widget()->findChild<QPushButton*>("buttonSubmitToken")) {
-        connect(btnToken, &QPushButton::clicked, this, [this]() {
-            auto edit = widget()->findChild<QLineEdit*>("lineEditLicenseToken");
-            auto labelStatus = widget()->findChild<QLabel*>("labelTokenStatus");
-            if (!edit || edit->text().trimmed().isEmpty() || !labelStatus) return;
-            setRequestInProgress({edit, sender()}, true);
-            labelStatus->setVisible(false);
-            bool success = XRDriverIPC::instance().verifyToken(edit->text().trimmed().toStdString());
-            if (success) {
-                QJsonObject flags; 
-                flags.insert(QStringLiteral("refresh_device_license"), true);
-                XRDriverIPC::instance().writeControlFlags(flags);
-            }
-            showStatus(labelStatus, success, success ? tr("Your license has been refreshed.") : tr("Invalid or expired token."));
-            setRequestInProgress({edit, sender()}, false);
-        });
-        if (auto tokenEdit = widget()->findChild<QLineEdit*>("lineEditLicenseToken")) {
-            tokenEdit->installEventFilter(this);
-        }
-    }
-
     // Resolution picker wiring handled above in Wayland section
     if (auto lookAheadOverrideSlider = widget()->findChild<LabeledSlider*>("kcfg_LookAheadOverride")) {
         lookAheadOverrideSlider->setValueText(-1, i18n("Default"));
@@ -704,8 +668,6 @@ void BreezyDesktopEffectConfig::pollDriverState()
         ui.NeckSaverVerticalMultiplier->setValue(vertInt);
     }
 
-    refreshLicenseUi(stateJson);
-
     m_driverStateInitialized = true;
 }
 
@@ -873,8 +835,6 @@ bool BreezyDesktopEffectConfig::eventFilter(QObject *watched, QEvent *event) {
                 // Determine which button to invoke
                 QString objName = edit->objectName();
                 QString buttonName;
-                if (objName == QLatin1String("lineEditLicenseEmail")) buttonName = QStringLiteral("buttonSubmitEmail");
-                else if (objName == QLatin1String("lineEditLicenseToken")) buttonName = QStringLiteral("buttonSubmitToken");
                 if (!buttonName.isEmpty()) {
                     if (auto btn = widget()->findChild<QPushButton*>(buttonName)) {
                         // Trigger click but stop further propagation so dialog doesn't accept/close
@@ -906,102 +866,6 @@ static QString secondsToRemainingString(qint64 secs) {
         return QObject::tr("%1 days").arg(days);
     }
     return {};
-}
-
-void BreezyDesktopEffectConfig::refreshLicenseUi(const QJsonObject &rootObj) {
-    auto tab = widget()->findChild<QWidget*>("tabLicenseDetails");
-    if (!tab) return;
-    auto labelSummary = tab->findChild<QLabel*>("labelLicenseSummary");
-    if (!labelSummary) return;
-    auto donate = tab->findChild<QLabel*>("labelDonateLink");
-    auto globalWarn = widget()->findChild<QLabel*>("labelGlobalWarning");
-
-    QString status = tr("disabled");
-    QString renewalDescriptor = QStringLiteral("");
-    auto uiView = rootObj.value(QStringLiteral("ui_view")).toObject();
-    auto license = uiView.value(QStringLiteral("license")).toObject();
-    bool warningState = false;
-    bool expired = false;
-    if (!license.isEmpty()) {
-        auto tiers = license.value(QStringLiteral("tiers")).toObject();
-        QJsonValue prodTier = tiers.value(QStringLiteral("subscriber"));
-        QJsonObject prodTierObj = prodTier.isUndefined() ? QJsonObject() : prodTier.toObject();
-
-        auto features = license.value(QStringLiteral("features")).toObject();
-        QJsonValue prodFeature = features.value(QStringLiteral("productivity_basic"));
-        QJsonObject prodFeatureObj = prodFeature.isUndefined() ? QJsonObject() : prodFeature.toObject();
-        if (!prodTierObj.isEmpty() && !prodFeatureObj.isEmpty()) {
-            const QString activePeriod = prodTierObj.value(QStringLiteral("active_period")).toString();
-            const bool isActive = !activePeriod.isEmpty();
-            if (isActive) {
-                status = tr("active");
-
-                QString periodDescriptor = activePeriod.contains(QStringLiteral("lifetime"), Qt::CaseInsensitive) ? 
-                    tr("lifetime") : 
-                    tr("%1 license").arg(activePeriod);
-
-                QString timeDescriptor;
-                auto secsVal = prodTierObj.value(QStringLiteral("funds_needed_in_seconds"));
-                if (secsVal.isDouble()) {
-                    qint64 secs = static_cast<qint64>(secsVal.toDouble());
-                    QString remaining = secondsToRemainingString(secs);
-                    if (!remaining.isEmpty()) {
-                        timeDescriptor = tr("%1 remaining").arg(remaining);
-                    }
-                }
-                renewalDescriptor = tr(" (%1)").arg(periodDescriptor);
-                warningState = !timeDescriptor.isEmpty();
-                if (warningState) {
-                    auto fundsNeeded = prodTierObj.value(QStringLiteral("funds_needed_by_period")).toObject().value(activePeriod).toDouble();
-                    if (fundsNeeded > 0.0) {
-                        QString fundsNeededDescriptor = tr("$%1 USD to renew").arg(fundsNeeded);
-                        renewalDescriptor = tr(" (%1, %2, %3)").arg(periodDescriptor, fundsNeededDescriptor, timeDescriptor);
-                    }
-                }
-            } else {
-                QJsonValue isEnabled = prodFeatureObj.value(QStringLiteral("is_enabled"));
-                QJsonValue isTrial = prodFeatureObj.value(QStringLiteral("is_trial"));
-                if (isEnabled.toBool()) {
-                    if (isTrial.toBool()) {
-                        status = tr("in trial");
-                        auto secsVal = prodFeatureObj.value(QStringLiteral("funds_needed_in_seconds"));
-                        if (secsVal.isDouble()) {
-                            qint64 secs = static_cast<qint64>(secsVal.toDouble());
-                            QString remaining = secondsToRemainingString(secs);
-                            warningState = !remaining.isEmpty();
-                            if (warningState) {
-                                QString timeDescriptor = tr("%1 remaining").arg(remaining);
-                                renewalDescriptor = tr(" (%1)").arg(timeDescriptor);
-                            }
-                        }
-                    }
-                } else {
-                    expired = true;
-                }
-            }
-        }
-    }
-    const QString message = tr("Productivity Tier features are %1%2").arg(status, renewalDescriptor);
-    labelSummary->setText(message);
-
-    if (donate) donate->setVisible(warningState || expired);
-
-    if (globalWarn && !globalWarn->isVisible()) {
-        if (warningState || expired) {
-            globalWarn->setText(message + (expired ? tr(" — effect disabled") : QString()));
-            globalWarn->setVisible(true);
-        } else {
-            globalWarn->clear();
-            globalWarn->setVisible(false);
-        }
-    }
-
-    if (expired) {
-        ui.EffectEnabled->setChecked(false);
-        ui.EffectEnabled->setEnabled(false);
-    } else {
-        ui.EffectEnabled->setEnabled(true);
-    }
 }
 
 #include "breezydesktopeffectkcm.moc"

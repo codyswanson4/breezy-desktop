@@ -75,100 +75,6 @@ msgstr ""
 msgid "farther"
 msgstr ""
 
-#: src/licensedialogcontent.py:63
-msgid "Paid Tier Status"
-msgstr "Betalningsstatus"
-
-#: src/licensedialogcontent.py:71
-msgid "Feature Availability"
-msgstr "Funktions tillgänglighet"
-
-#: src/licensefeaturerow.py:15 src/shortcutdialog.py:104
-msgid "Disabled"
-msgstr "Inaktiverad"
-
-#: src/licensefeaturerow.py:18
-msgid "In trial"
-msgstr "Provperiod pågår"
-
-#: src/licensefeaturerow.py:18
-msgid "Enabled"
-msgstr "Aktiverad"
-
-#: src/licensefeaturerow.py:24 src/licensetierrow.py:30
-#, python-brace-format
-msgid " ({time_remaining} remaining)"
-msgstr " ({time_remaining} kvar)"
-
-#: src/licensefeaturerow.py:30
-msgid "Side-by-side mode (gaming)"
-msgstr "Side-by-side läge (spel)"
-
-#: src/licensefeaturerow.py:31
-msgid "Smooth Follow (gaming)"
-msgstr "Smidig följning (spel)"
-
-#: src/licensefeaturerow.py:32
-msgid "Breezy Desktop (productivity)"
-msgstr "Breezy Desktop (produktivitet)"
-
-#: src/licensetierrow.py:24
-msgid "Active"
-msgstr "Aktiv"
-
-#: src/licensetierrow.py:24
-msgid "Inactive"
-msgstr "Inaktiv"
-
-#: src/licensetierrow.py:41
-#, python-brace-format
-msgid "<b>${amount}</b> USD"
-msgstr "<b>${amount}</b> USD"
-
-#: src/licensetierrow.py:43
-msgid " to renew"
-msgstr " att förnya"
-
-#: src/licensetierrow.py:45
-msgid " to upgrade"
-msgstr " att uppgradera"
-
-#: src/licensetierrow.py:47
-msgid "Paid through next renewal period"
-msgstr "Betald genom nästa förnyelseperiod"
-
-#: src/licensetierrow.py:56
-msgid "Gaming"
-msgstr "Spel"
-
-#: src/licensetierrow.py:57
-msgid "Productivity"
-msgstr "Produktivitet"
-
-#: src/licensetierrow.py:63
-msgid " - renewing monthly"
-msgstr " - förnyar månadsvis"
-
-#: src/licensetierrow.py:64
-msgid " - renewing yearly"
-msgstr " - förnyar årligen"
-
-#: src/licensetierrow.py:65
-msgid "with lifetime access"
-msgstr "med livstidsåtkomst"
-
-#: src/licensetierrow.py:72
-msgid "Monthly"
-msgstr "Månatlig"
-
-#: src/licensetierrow.py:73
-msgid "Yearly"
-msgstr "Årlig"
-
-#: src/licensetierrow.py:74
-msgid "Lifetime"
-msgstr "Livstid"
-
 #: src/time.py:14
 msgid "less than an hour"
 msgstr "mindre än en timme"
@@ -579,34 +485,6 @@ msgstr ""
 msgid "Done"
 msgstr ""
 
-#: src/gtk/failed-verification.ui:13
-msgid "Breezy Desktop GNOME invalid setup"
-msgstr "Breezy Desktop GNOME ogiltig inställning"
-
-#: src/gtk/failed-verification.ui:14
-msgid ""
-"Your Breezy GNOME setup is invalid or incomplete. Please re-run the setup "
-"script. Report this issue if it persists."
-msgstr ""
-"Din Breezy GNOME inställning är ogiltig eller ofullständig. Var god kör "
-"inställning skriptet igen. Rapportera detta problem om det fortsätter."
-
-#: src/gtk/license-dialog-content.ui:15
-msgid "Donate"
-msgstr "Donera"
-
-#: src/gtk/license-dialog-content.ui:31
-msgid "Request a token"
-msgstr "Begär en token"
-
-#: src/gtk/license-dialog-content.ui:39
-msgid "Verify token"
-msgstr "Verifiera token"
-
-#: src/gtk/license-dialog.ui:5 src/gtk/window.ui:91
-msgid "License Details"
-msgstr "Licensdetaljer"
-
 #: src/gtk/no-device.ui:13
 msgid "No device connected"
 msgstr "Inget enhet ansluten"
@@ -663,42 +541,6 @@ msgstr ""
 "Om du har kört inställning, kanske du behöver logga ut och in igen för att "
 "använda den. Annars, var god att följa Breezy GNOME inställning "
 "instruktioner."
-
-#: src/gtk/no-license.ui:13
-msgid "No license file was found"
-msgstr "Inget licens fil hittades"
-
-#: src/gtk/no-license.ui:14
-msgid ""
-"\n"
-"          The first time you use Breezy Desktop, an internet connection is "
-"required to retrieve your device's license.\n"
-"          \n"
-"          Don't worry, there's no obligation to donate at this time. If you "
-"haven't, you'll be given a trial license so you can decide if Breezy Desktop "
-"fits your needs. \n"
-"          \n"
-"          Once you obtain a license, trial or otherwise, you can use Breezy "
-"Desktop offline until features expire (or indefinitely, if you've chosen "
-"lifetime access).\n"
-"        "
-msgstr ""
-"\n"
-"          Den första gången du använder Breezy Desktop, krävs en internet "
-"anslutning för att hämta din enhets licens.\n"
-"          \n"
-"          Var inte bekymrad, det finns ingen förpliktelse att donera just "
-"nu. Om du inte har, kommer du att få en försöks licens så du kan bestämma om "
-"Breezy Desktop passar dina behov. \n"
-"          \n"
-"          En gång du har fått en licens, försöks eller annat, kan du använda "
-"Breezy Desktop offline tills funktioner upphör (eller oändligt, om du har "
-"valt livstidsåtkomst).\n"
-"        "
-
-#: src/gtk/no-license.ui:27
-msgid "Try Again"
-msgstr "Försök igen"
 
 #: src/gtk/shortcut-dialog.ui:5
 msgid "Assign Keyboard Shortcut"

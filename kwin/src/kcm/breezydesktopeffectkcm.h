@@ -75,6 +75,5 @@ private:
     QString m_connectedDeviceModel;
     QTimer m_statePollTimer; // periodic driver state polling
     QTimer m_virtualDisplayPollTimer; // periodic virtual display list polling
-    bool m_licenseLoading = false;
     bool m_curvedDisplaySupported = true;
 };

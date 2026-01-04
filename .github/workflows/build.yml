@@ -38,7 +38,7 @@ jobs:
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
     - name: Setup Meson
-      run: meson setup build-output-dir
+      run: meson setup $build-output-dir
 
     - name: Compile with Meson
       run: meson compile

@@ -44,8 +44,6 @@ PACKAGE_DIR=$GNOME_BUILD_DIR/breezy_gnome
 rm -rf $PACKAGE_DIR
 mkdir -p $PACKAGE_DIR
 
-source $XR_DRIVER_DIR/bin/inject_ua
-
 # if a custom_banner image exists, copy it over the sombrero one
 if [ -e "$VULKAN_DIR/custom_banner.png" ]; then
   cp $VULKAN_DIR/custom_banner.png $PACKAGE_DIR
@@ -53,7 +51,7 @@ fi
 
 # copy vulkan setup scripts and configs
 mkdir -p $PACKAGE_DIR/bin
-copy_and_inject_ua "$XR_DRIVER_DIR/bin/ua.sh" "$PACKAGE_DIR/bin" "$GNOME_DIR/bin/setup" "$GNOME_DIR/bin/breezy_gnome_verify" "$GNOME_DIR/bin/breezy_gnome_uninstall"
+cp "$PACKAGE_DIR/bin" "$GNOME_DIR/bin/setup" "$GNOME_DIR/bin/breezy_gnome_verify" "$GNOME_DIR/bin/breezy_gnome_uninstall"
 
 XR_DRIVER_BINARY=$XR_DRIVER_DIR/out/xrDriver-$ARCH.tar.gz
 
